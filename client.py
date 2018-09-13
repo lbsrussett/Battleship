@@ -6,7 +6,7 @@ def updateOpponentBoard(result, position):
     if(result == "I"):
         print("Wrong")
     else:
-        opponentBoard[position[x]][position[y]] = result
+        opponentBoard[int(position[0])][int(position[1])] = result
     saveBoard("opponent_board.txt",opponentBoard)
 
 def loadBoard(fileName):
@@ -25,7 +25,7 @@ def saveBoard(fileName, board):
     for x in range(10):
         line = ""
         for y in range(10):
-            line += opponentBoard[x][y]
+            line += board[x][y]
         line+="\n"
         file.write(line)
     file.close()
@@ -54,19 +54,30 @@ pprint(c1_opponent_board)
 	
 
 #code to write to file - needs to be updated to read current state of board before changing
-filename1 = 'c1_opponent_board.txt'
-c1b = str(c1_opponent_board)
-f = open(filename1,'w')
-f.write(c1b)
-f.close()
-filename2 = 'c2_opponent_board.txt'
-c2b = str(c2_opponent_board)
-f = open(filename2,'w')
-f.write(c2b)
-f.close()
+# filename1 = 'c1_opponent_board.txt'
+# c1b = str(c1_opponent_board)
+# f = open(filename1,'w')
+# f.write(c1b)
+# f.close()
+# filename2 = 'c2_opponent_board.txt'
+# c2b = str(c2_opponent_board)
+# f = open(filename2,'w')
+# f.write(c2b)
+# f.close()
 
 
 message = X_COORD + ',' + Y_COORD #send the x and y coordinates
+
+# POST /cgi-bin/process.cgi HTTP/1.1
+# User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)
+# Host: www.tutorialspoint.com
+# Content-Type: application/x-www-form-urlencoded
+# Content-Length: length
+# Accept-Language: en-us
+# Accept-Encoding: gzip, deflate
+# Connection: Keep-Alive
+
+# licenseID=string&content=string&/paramsXML=string
 
 #connect to the server
 c1.connect((HOST, PORT))
@@ -75,7 +86,7 @@ c1.connect((HOST, PORT))
 c1.send(bytes(message))
 
 result = c1.recv(BUFFER_SIZE)
-print data + ' and received by client'
+# print data + ' and received by client'
 c1.close()
 
 position = [X_COORD, Y_COORD]

@@ -1,6 +1,8 @@
 import socket
 import sys
 from pprint import pprint
+import httplib
+
 
 BUFFER_SIZE = 1024
 #retrieve port and board inputs from command line
@@ -15,12 +17,7 @@ s2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 HOST = '127.0.0.1'   
 PORT = int(port)
 
-with open(own_board) as f:
-    data = f.readlines()
 
-# for d in data:
-# 	list(d)
-# 	print d + '\r\n'
 #bind first server to socket
 s1.bind((HOST, PORT))
 # print 'Successfully connected to: ' + str(PORT)
@@ -32,11 +29,12 @@ conn, addr = s1.accept()
 print 'Connected with ' + addr[0] + ':' + str(addr[1])
 data = conn.recv(BUFFER_SIZE)
 if data:
-	print data
+	fire = data.split(',')
 else:
 	print 'no data'
 
-reply = 'Successfully sent from server'
+reply = 'B'
+
 conn.send(reply)
 # conn.close()
 
