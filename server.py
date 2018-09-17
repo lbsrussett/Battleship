@@ -6,6 +6,7 @@ from pprint import pprint
 import httplib
 import requests
 from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
+from SimpleHTTPServer import SimpleHTTPRequestHandler
 
 # BUFFER_SIZE = 1024
 
@@ -24,15 +25,16 @@ PORT = int(port)
 res = {key1 : 'B', key2 : 'F'}
 
 #class to handle http requests - it starts to work, but does not finish sending response
-class myHandler(BaseHTTPRequestHandler):
+class myHandler(SimpleHTTPRequestHandler):
 	
 	#Handler for the POST requests
 	def do_POST(self):
 		print 'post request entered'
-		print self.wfile
 		self.send_response(200)
+		self.send_header('Content-type','text/html')
 		self.end_headers()
-		self.wfile.write(res)
+		# Send the html message
+		self.wfile.write("Hello World !")
 		return			
 try:
 	#Create a web server and define the handler to manage the
@@ -40,7 +42,7 @@ try:
 	server = HTTPServer((HOST, PORT), myHandler)
 	print 'Started httpserver on port', PORT
 	
-	#Wait forever for incoming htto requests
+	#Wait forever for incoming http requests
 	server.serve_forever()
 
 except KeyboardInterrupt:
