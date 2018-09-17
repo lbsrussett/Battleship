@@ -6,7 +6,7 @@ def updateOpponentBoard(result, position):
     if(result == "I"):
         print("Wrong")
     else:
-        opponentBoard[position[x]][position[y]] = result
+        opponentBoard[int(position[0])][int(position[1])] = result
     saveBoard("opponent_board.txt",opponentBoard)
 
 def loadBoard(fileName):

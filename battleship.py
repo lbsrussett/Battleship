@@ -69,6 +69,18 @@ def updateOpponentBoard(guess, opponentBoard):
     elif(boardValue == "B"): #Battleship
         opponentBoard[x][y] = "H"
         return "B"
+    elif(boardValue == "D"): #Destoryer
+        opponentBoard[x][y] = "H"
+        return "D"
+    elif(boardValue == "C"): #Carrier
+        opponentBoard[x][y] = "H"
+        return "C"
+    elif(boardValue == "S"): #Sub
+        opponentBoard[x][y] = "H"
+        return "S"
+    elif(boardValue == "R"): #cRuiser
+        opponentBoard[x][y] = "H"
+        return "R"
     else: #Blank
         opponentBoard[x][y] = 'M'
         return 'M'
