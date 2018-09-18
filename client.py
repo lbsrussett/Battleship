@@ -45,7 +45,6 @@ def getShip(hit):
 	else:
 		return 'Big Oops'
 
-
 #take command line input and save as variables
 HOST = sys.argv[1]
 PORT = int(sys.argv[2])
@@ -57,13 +56,6 @@ ENDPOINT = "127.0.0.1:" + str(PORT)
 payload = urllib.urlencode({ 'x': X_COORD, 'y' : Y_COORD })  
 #create a connection  
 conn = httplib.HTTPConnection(ENDPOINT)  
-  
-# while 1:  
-#   cmd = raw_input('input command (ex. GET index.html): ')  
-#   cmd = cmd.split()  
-  
-#   if cmd[0] == 'exit': #type exit to end it  
-#     break  
 
 #request command to server  
 conn.request('POST', '/fire', payload)  
@@ -80,11 +72,6 @@ data_received = resp.read()
 resp = ast.literal_eval(data_received)
 position = [X_COORD, Y_COORD]
 
-# conn = httplib.HTTPConnection(ENDPOINT)  
-
-# conn.request('GET', 'opp')
-# print conn.getresponse
-# conn.flush() 
 #conditions to determine results of fire message
 if resp['sink='] == 'T':
 	result = resp['hit=']
@@ -100,10 +87,12 @@ else:
 	print 'You got no results'
 
 cmd = raw_input('Please enter own or opp to view board): ')   
+param = urllib.urlencode({ 'key' : cmd})
 if cmd == 'own':
-	conn.request('GET', '/own_board.html', cmd)
+	conn.request('GET', '/own_board', param)
 elif cmd == 'opp':
-	conn.request('GET', '/opponent_board.html', cmd)
+	conn.request('GET', '/opponent_board.html', param)
+
 r = conn.getresponse()
 print r.read()
 conn.close()
