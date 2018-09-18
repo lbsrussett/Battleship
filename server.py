@@ -1,5 +1,5 @@
 import socket
-import sys, urllib
+import sys, urllib, webbrowser
 from pprint import pprint
 import httplib
 from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
@@ -16,17 +16,49 @@ Y_COORD = -1
 HOST = '127.0.0.1'   
 PORT = int(port)
 
-#class to handle http requests - it starts to work, but does not finish sending response
+#helper method to parse x and y coordinates from the http response 
+def getCoords(message):
+	a, b, c, d, e, f, g = message
+	if a == 'y':
+		Y_COORD = int(c)
+		X_COORD = int(g)
+	elif e == 'y':
+		Y_COORD = int(g)
+		X_COORD = int(c)
+	return X_COORD, Y_COORD
+
+#class to handle http requests and use them to interact with battleship game
 class myHandler(SimpleHTTPRequestHandler):
 	
+	def do_GET(self):
+		self.send_response(200)
+		message = self.rfile.read(3)
+		self.send_header('Content-type','text/html')
+		self.end_headers()
+		res = 'The board has been opened.'
+		# Send the html message
+		self.wfile.write(res)
+		if message == 'own' and PORT == 5000:
+			webbrowser.open('http://localhost:5000/P1/own_board.html')
+			return
+		elif message == 'own' and PORT != 5000:
+			webbrowser.open('http://localhost:' + port + '/P2/own_board.html')
+			return
+		elif message == 'opp' and PORT == 5000:
+			webbrowser.open('http://localhost:5000/P1/opponent_board.html')
+			return
+		elif message == 'own' and PORT != 5000:
+			webbrowser.open('http://localhost:' + port + '/P2/opponent_board.html')
+			return
+		return
 	#Handler for the POST requests
 	def do_POST(self):
-		content_length = self.headers.getheaders('content-length')
-		l = int(content_length[0]) if content_length else 0
 		self.send_response(200)
 		message = self.rfile.read(int(self.headers.getheader('Content-Length')))
-		print message
-		res = {key1 : 'B', key2 : 'T'}
+		X_COORD, Y_COORD = getCoords(message)
+		#here is where we need to call battleship
+		res = {key1 : X_COORD, key2 : Y_COORD}
+		print res
 		self.send_header('Content-type','text/html')
 		self.end_headers()
 		# Send the html message

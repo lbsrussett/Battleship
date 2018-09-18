@@ -1,5 +1,5 @@
 import socket, sys, httplib
-import urllib, ast
+import urllib, ast, webbrowser
 
 def updateOpponentBoard(result, position):
     opponentBoard = loadBoard("opponent_board.txt")
@@ -74,12 +74,17 @@ resp = conn.getresponse()
 #print server response and data  
 print(resp.status, resp.reason)  
 data_received = resp.read() 
-conn.close()  
+
 
 #take string response and convert back to dictionary of results
 resp = ast.literal_eval(data_received)
 position = [X_COORD, Y_COORD]
 
+# conn = httplib.HTTPConnection(ENDPOINT)  
+
+# conn.request('GET', 'opp')
+# print conn.getresponse
+# conn.flush() 
 #conditions to determine results of fire message
 if resp['sink='] == 'T':
 	result = resp['hit=']
@@ -93,4 +98,13 @@ elif resp['sink='] == 'F':
 	print 'You hit the ' + ship + '!'
 else:
 	print 'You got no results'
+
+cmd = raw_input('Please enter own or opp to view board): ')   
+if cmd == 'own':
+	conn.request('GET', '/own_board.html', cmd)
+elif cmd == 'opp':
+	conn.request('GET', '/opponent_board.html', cmd)
+r = conn.getresponse()
+print r.read()
+conn.close()
     
