@@ -1,40 +1,36 @@
-#https://www.acmesystems.it/python_http
-
 import socket
-import sys
+import sys, urllib
 from pprint import pprint
 import httplib
-import requests
 from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
 from SimpleHTTPServer import SimpleHTTPRequestHandler
-
-# BUFFER_SIZE = 1024
 
 #retrieve port and board inputs from command line
 port = sys.argv[1]
 own_board = sys.argv[2]
 key1 = 'hit='
 key2 = 'sink='
-
-#initialize sockets for servers
-# s1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-# s2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+X_COORD = -1
+Y_COORD = -1
 
 HOST = '127.0.0.1'   
 PORT = int(port)
-res = {key1 : 'B', key2 : 'F'}
 
 #class to handle http requests - it starts to work, but does not finish sending response
 class myHandler(SimpleHTTPRequestHandler):
 	
 	#Handler for the POST requests
 	def do_POST(self):
-		print 'post request entered'
+		content_length = self.headers.getheaders('content-length')
+		l = int(content_length[0]) if content_length else 0
 		self.send_response(200)
+		message = self.rfile.read(int(self.headers.getheader('Content-Length')))
+		print message
+		res = {key1 : 'B', key2 : 'T'}
 		self.send_header('Content-type','text/html')
 		self.end_headers()
 		# Send the html message
-		self.wfile.write("Hello World !")
+		self.wfile.write(res)
 		return			
 try:
 	#Create a web server and define the handler to manage the
@@ -48,30 +44,3 @@ try:
 except KeyboardInterrupt:
 	print '^C received, shutting down the web server'
 	server.socket.close()
-
-#bind first server to socket
-# s1.bind((HOST, PORT))
-# print 'Successfully connected to: ' + str(PORT)
-
-# s1.listen(10)
-
-
-
-#create listening connection to receive data from client
-# conn, addr = s1.accept()
-# print 'Connected with ' + addr[0] + ':' + str(addr[1])
-
-
-# data = conn.recv(BUFFER_SIZE)
-# if data:
-# 	print data
-# else:
-# 	print 'no data'
-
-# response = 'B'
-# conn.send(response)
-# conn.close()
-
-#need logic to take data from client side to interact with battleship game
-#need to update own_board based on game logic
-

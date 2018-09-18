@@ -1,8 +1,5 @@
-
-
-import socket, sys
-from pprint import pprint
-import requests 
+import socket, sys, httplib
+import urllib, ast
 
 def updateOpponentBoard(result, position):
     opponentBoard = loadBoard("opponent_board.txt")
@@ -34,39 +31,66 @@ def saveBoard(fileName, board):
     file.close()
     return board
 
+def getShip(hit):
+	if hit == 'B':
+		return 'Battleship'
+	elif hit == 'C':
+		return 'Carrier'
+	elif hit == 'D':
+		return 'Destroyer'
+	elif hit == 'R':
+		return 'Cruiser'
+	elif hit == 'S':
+		return 'Submarine'
+	else:
+		return 'Big Oops'
+
+
 #take command line input and save as variables
 HOST = sys.argv[1]
 PORT = int(sys.argv[2])
 X_COORD = sys.argv[3]
 Y_COORD = sys.argv[4]
 BUFFER_SIZE = 1024
-ENDPOINT = "http://127.0.0.1:" + str(PORT) + '/post'
-
-
-c1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-c2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-#connect to the server
-c1.connect((HOST, PORT))
-
+ENDPOINT = "127.0.0.1:" + str(PORT)
 #format for sending coordinate data in http post request
-payload = { 'x': X_COORD, 'y' : Y_COORD }
+payload = urllib.urlencode({ 'x': X_COORD, 'y' : Y_COORD })  
+#create a connection  
+conn = httplib.HTTPConnection(ENDPOINT)  
+  
+# while 1:  
+#   cmd = raw_input('input command (ex. GET index.html): ')  
+#   cmd = cmd.split()  
+  
+#   if cmd[0] == 'exit': #type exit to end it  
+#     break  
 
-#post request to http server - response should be returned in fire variable
-#there is something wrong with this, as the result never gets returned
-fire = requests.post(ENDPOINT, data=payload)
-print 'sent fire message'
-#if a response is received, should be able to print its text with this command
-print fire.text
+#request command to server  
+conn.request('POST', '/fire', payload)  
+  
+#get response from server  
+resp = conn.getresponse()  
 
-#send the message to the server
-# c1.send(bytes(fire))
+#print server response and data  
+print(resp.status, resp.reason)  
+data_received = resp.read() 
+conn.close()  
 
-# result = c1.recv(BUFFER_SIZE)
-# print result.text
-# print data + ' and received by client'
-c1.close()
-
+#take string response and convert back to dictionary of results
+resp = ast.literal_eval(data_received)
 position = [X_COORD, Y_COORD]
-updateOpponentBoard(result, position)
+
+#conditions to determine results of fire message
+if resp['sink='] == 'T':
+	result = resp['hit=']
+	ship = getShip(result)
+	updateOpponentBoard(result, position)
+	print 'You sunk the ' + ship + '!'
+elif resp['sink='] == 'F':
+	result = resp['hit=']
+	ship = getShip(result)
+	updateOpponentBoard(result, position)
+	print 'You hit the ' + ship + '!'
+else:
+	print 'You got no results'
     
