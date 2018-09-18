@@ -1,5 +1,5 @@
 import socket
-import sys, urllib, webbrowser
+import sys, urllib, webbrowser, urllib2
 from pprint import pprint
 import httplib
 from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
@@ -27,35 +27,41 @@ def getCoords(message):
 		X_COORD = int(c)
 	return X_COORD, Y_COORD
 
-def openBoard(path, message):
+def openBoard(path):
 	host = 'http://localhost:'
-	if message == 'own' and PORT == 5000:
+	if PORT == 5000 and path == '/own_board.html':
 		webbrowser.open(host + port + '/p1own_board.html')
-		return
-	elif message == 'own' and PORT != 5000:
+		return 
+	elif PORT != 5000 and path == '/own_board.html':
 		webbrowser.open(host + port + '/p2own_board.html')
-		return
-	elif message == 'opp' and PORT == 5000:
-		webbrowser.open(host + port + '/p1opponent_board.html')
-		return
-	elif message == 'own' and PORT != 5000:
+		return 
+	elif PORT == 5000 and path == '/opponent_board.html':
+		webbrowser.open(host + port + 'p1opponent_board.html')
+		return 
+	elif PORT != 5000 and path == '/opponent_board.html':
 		webbrowser.open(host + port + '/p2opponent_board.html')
 		return
-	return
+	else:
+		return
+	return 
 #class to handle http requests and use them to interact with battleship game
 class myHandler(SimpleHTTPRequestHandler):
 	
 	def do_GET(self):
 		self.send_response(200)
-		message = self.rfile.read(int(self.headers.getheader('Content-Length')))
-		board = message[4:7]
-		print board
+		# message = self.rfile.read(int(self.headers.getheader('Content-Length')))
+		# board = message[4:7]
+		# print board
 		self.send_header('Content-type','text/html')
 		self.end_headers()
-		res = 'The board has been opened.'
+		
 		# Send the html message
-		self.wfile.write(res)
-		openBoard(self.path, board)
+		openBoard(self.path)
+		result = self.path
+		if result:
+			self.wfile.write(result)
+		else:
+			self.wfile.write('There was an error')
 		return
 
 	#Handler for the POST requests
