@@ -29,20 +29,19 @@ def getCoords(message):
 
 def openBoard(path):
 	host = 'http://localhost:'
-	if PORT == 5000 and path == '/own_board.html':
+	if PORT == 5000 and path == '/own_board':
 		webbrowser.open(host + port + '/p1own_board.html')
-		return 
 	elif PORT != 5000 and path == '/own_board.html':
 		webbrowser.open(host + port + '/p2own_board.html')
-		return 
+		return 'p2own_board.txt'
 	elif PORT == 5000 and path == '/opponent_board.html':
 		webbrowser.open(host + port + 'p1opponent_board.html')
-		return 
+		return 'p1opponent_board.txt'
 	elif PORT != 5000 and path == '/opponent_board.html':
 		webbrowser.open(host + port + '/p2opponent_board.html')
-		return
+		return 'p2opponent_board.txt'
 	else:
-		return
+		return 
 	return 
 #class to handle http requests and use them to interact with battleship game
 class myHandler(SimpleHTTPRequestHandler):
@@ -57,11 +56,18 @@ class myHandler(SimpleHTTPRequestHandler):
 		
 		# Send the html message
 		openBoard(self.path)
-		result = self.path
-		if result:
-			self.wfile.write(result)
+		if self.path == '/p1own_board.html':
+			# board = self.path[:-4] + 'txt'
+			board = 'p1own_board.txt'
+			file = open(board,"r")
+			for f in file:
+				self.wfile.write(f)
+				self.wfile.write('\n')
+			file.close()
+			self.wfile.write('Your Board')
+			return
 		else:
-			self.wfile.write('There was an error')
+			return
 		return
 
 	#Handler for the POST requests

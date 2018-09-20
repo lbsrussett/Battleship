@@ -87,13 +87,13 @@ else:
 	print 'You got no results'
 
 cmd = raw_input('Please enter own or opp to view board): ')   
-param = urllib.urlencode({ 'key' : cmd})
 if cmd == 'own':
-	conn.request('GET', '/own_board.html', param)
+	conn.request('GET', '/own_board')
 elif cmd == 'opp':
-	conn.request('GET', '/opponent_board.html', param)
+	conn.request('GET', '/opponent_board.html')
 
 r = conn.getresponse()
+print r.status
 print r.read()
 conn.close()
     
